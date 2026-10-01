@@ -23,7 +23,7 @@ const channel = typeof BroadcastChannel !== 'undefined' ? new BroadcastChannel('
 const localListeners = new Set<() => void>()
 
 function notifyChanged() {
-  notifyChanged()
+  channel?.postMessage('changed')
   localListeners.forEach((cb) => cb())
 }
 
