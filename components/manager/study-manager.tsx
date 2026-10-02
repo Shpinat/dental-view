@@ -8,6 +8,7 @@ import { useImporter } from '@/hooks/use-importer'
 import { ImportDropzone } from './import-dropzone'
 import { StudyList } from './study-list'
 import { StorageIndicator } from './storage-indicator'
+import { ThemeToggle } from '@/components/theme-toggle'
 
 export function StudyManager() {
   const { data: studies, isLoading, mutate } = useSWR('studies', listStudies)
@@ -37,6 +38,7 @@ export function StudyManager() {
               Работает офлайн
             </span>
             <StorageIndicator count={studies?.length ?? 0} />
+            <ThemeToggle />
           </div>
         </div>
       </header>
@@ -56,12 +58,6 @@ export function StudyManager() {
         </section>
 
         <section aria-labelledby="studies-heading" className="flex flex-col gap-3">
-          <div className="flex items-baseline justify-between">
-            <h2 id="studies-heading" className="text-sm font-medium">
-              Исследования
-              {studies?.length ? <span className="ml-2 font-mono text-muted-foreground">{studies.length}</span> : null}
-            </h2>
-          </div>
           <StudyList studies={studies} loading={isLoading} onLoadDemo={importer.importPhantom} />
         </section>
       </main>

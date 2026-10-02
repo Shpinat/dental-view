@@ -37,6 +37,9 @@ export function MprLayout({ volume }: { volume: Volume }) {
         info={[`Срез ${k + 1}/${nz}`, `Z ${(k * sz).toFixed(1)} мм`]}
         orientation={{ top: 'A', bottom: 'P', left: 'R', right: 'L' }}
         onScroll={(d) => setCursor({ z: z + d })}
+        sliceIndex={k}
+        sliceCount={nz}
+        onSliceChange={(idx) => setCursor({ z: idx })}
         onImagePointer={follow((e) => setCursor({ x: e.point.x, y: e.point.y }))}
         drawOverlay={(ctx, api) => drawCrossLines(ctx, api, { x, y }, ACCENT.sagittal, ACCENT.coronal)}
       />
@@ -48,6 +51,9 @@ export function MprLayout({ volume }: { volume: Volume }) {
         info={[`Срез ${j + 1}/${ny}`, `Y ${(j * sy).toFixed(1)} мм`]}
         orientation={{ top: 'S', bottom: 'I', left: 'R', right: 'L' }}
         onScroll={(d) => setCursor({ y: y + d })}
+        sliceIndex={j}
+        sliceCount={ny}
+        onSliceChange={(idx) => setCursor({ y: idx })}
         onImagePointer={follow((e) => setCursor({ x: e.point.x, z: nz - 1 - e.point.y }))}
         drawOverlay={(ctx, api) =>
           drawCrossLines(ctx, api, { x, y: nz - 1 - z }, ACCENT.sagittal, ACCENT.axial)
@@ -61,6 +67,9 @@ export function MprLayout({ volume }: { volume: Volume }) {
         info={[`Срез ${i + 1}/${nx}`, `X ${(i * sx).toFixed(1)} мм`]}
         orientation={{ top: 'S', bottom: 'I', left: 'A', right: 'P' }}
         onScroll={(d) => setCursor({ x: x + d })}
+        sliceIndex={i}
+        sliceCount={nx}
+        onSliceChange={(idx) => setCursor({ x: idx })}
         onImagePointer={follow((e) => setCursor({ y: e.point.x, z: nz - 1 - e.point.y }))}
         drawOverlay={(ctx, api) =>
           drawCrossLines(ctx, api, { x: y, y: nz - 1 - z }, ACCENT.coronal, ACCENT.axial)
