@@ -15,6 +15,7 @@ export const metadata: Metadata = {
   generator: 'v0.app',
   applicationName: 'ДентаВью',
   appleWebApp: { capable: true, title: 'ДентаВью', statusBarStyle: 'black-translucent' },
+  manifest: '/manifest.webmanifest',
   icons: {
     icon: [{ url: '/icon-512.png', type: 'image/png' }],
     apple: '/icon-512.png',
