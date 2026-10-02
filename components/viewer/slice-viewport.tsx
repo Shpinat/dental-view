@@ -5,6 +5,7 @@ import { buildLut, renderToImageData } from '@/lib/volume'
 import { useViewer } from '@/lib/viewer-store'
 import type { Measurement, Point2, SliceImage } from '@/lib/types'
 import { cn } from '@/lib/utils'
+import { Slider } from '@/components/ui/slider'
 
 export interface OverlayApi {
   toScreen: (p: Point2) => Point2
@@ -34,11 +35,14 @@ interface SliceViewportProps {
   drawOverlay?: (ctx: CanvasRenderingContext2D, api: OverlayApi) => void
   className?: string
   placeholder?: string
+  sliceIndex?: number
+  sliceCount?: number
+  onSliceChange?: (index: number) => void
 }
 
 const FONT = '11px "Geist Mono", ui-monospace, monospace'
 
-type DragMode = 'wl' | 'pan' | 'zoom' | 'measure' | 'external' | null
+type DragMode = 'rotate' | 'wl' | 'pan' | 'zoom' | 'measure' | 'external' | null
 
 export function SliceViewport({
   image,
@@ -52,13 +56,16 @@ export function SliceViewport({
   drawOverlay,
   className,
   placeholder,
+  sliceIndex,
+  sliceCount,
+  onSliceChange,
 }: SliceViewportProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const offscreenRef = useRef<HTMLCanvasElement | null>(null)
   const sizeRef = useRef({ w: 0, h: 0 })
-  const viewRef = useRef({ zoom: 1, panX: 0, panY: 0 })
-  const dragRef = useRef<{ mode: DragMode; startX: number; startY: number; wl?: { center: number; width: number }; zoom?: number; panX?: number; panY?: number; anchor?: Point2 }>({ mode: null, startX: 0, startY: 0 })
+  const viewRef = useRef({ zoom: 1, panX: 0, panY: 0, angle: 0 })
+  const dragRef = useRef<{ mode: DragMode; startX: number; startY: number; wl?: { center: number; width: number }; zoom?: number; panX?: number; panY?: number; angle?: number; anchor?: Point2 }>({ mode: null, startX: 0, startY: 0 })
   const draftRef = useRef<Measurement | null>(null)
   const hoverRef = useRef<{ p: Point2; value: number } | null>(null)
   const frameRef = useRef(0)
@@ -99,19 +106,44 @@ export function SliceViewport({
     const wMm = img.width * img.spacingX
     const hMm = img.height * img.spacingY
     const fit = Math.min(w / wMm, h / hMm) * 0.94
-    const { zoom, panX, panY } = viewRef.current
+    const { zoom, panX, panY, angle } = viewRef.current
     const scale = fit * zoom
     const pxX = scale * img.spacingX
     const pxY = scale * img.spacingY
-    const originX = w / 2 + panX - (wMm * scale) / 2
-    const originY = h / 2 + panY - (hMm * scale) / 2
+    const cx = w / 2 + panX
+    const cy = h / 2 + panY
+    const originX = cx - (wMm * scale) / 2
+    const originY = cy - (hMm * scale) / 2
+
+    const cos = Math.cos(angle)
+    const sin = Math.sin(angle)
+
+    const rotatePoint = (x: number, y: number, cx: number, cy: number, cos: number, sin: number) => {
+      const dx = x - cx
+      const dy = y - cy
+      return {
+        x: cx + dx * cos - dy * sin,
+        y: cy + dx * sin + dy * cos
+      }
+    }
+
     return {
       pxX,
       pxY,
       originX,
       originY,
-      toScreen: (p: Point2) => ({ x: originX + (p.x + 0.5) * pxX, y: originY + (p.y + 0.5) * pxY }),
-      toImage: (sx: number, sy: number) => ({ x: (sx - originX) / pxX - 0.5, y: (sy - originY) / pxY - 0.5 }),
+      cx,
+      cy,
+      angle,
+      toScreen: (p: Point2) => {
+        const x0 = originX + (p.x + 0.5) * pxX
+        const y0 = originY + (p.y + 0.5) * pxY
+        return rotatePoint(x0, y0, cx, cy, cos, sin)
+      },
+      toImage: (sx: number, sy: number) => {
+        const { x, y } = rotatePoint(sx, sy, cx, cy, cos, -sin)
+        return { x: (x - originX) / pxX - 0.5, y: (y - originY) / pxY - 0.5 }
+      },
     }
   }, [])
 
@@ -130,9 +162,14 @@ export function SliceViewport({
     const off = offscreenRef.current
     if (!img || !t || !off) return
 
+    ctx.save()
+    ctx.translate(t.cx, t.cy)
+    ctx.rotate(t.angle)
+    ctx.translate(-t.cx, -t.cy)
     ctx.imageSmoothingEnabled = true
     ctx.imageSmoothingQuality = 'high'
     ctx.drawImage(off, t.originX, t.originY, img.width * t.pxX, img.height * t.pxY)
+    ctx.restore()
 
     const api: OverlayApi = { toScreen: t.toScreen, pxPerImageX: t.pxX, pxPerImageY: t.pxY, width: w, height: h }
     ctx.save()
@@ -182,7 +219,7 @@ export function SliceViewport({
   })
 
   useEffect(() => {
-    viewRef.current = { zoom: 1, panX: 0, panY: 0 }
+    viewRef.current = { zoom: 1, panX: 0, panY: 0, angle: 0 }
     scheduleDraw()
   }, [viewToken, scheduleDraw])
 
@@ -264,7 +301,7 @@ export function SliceViewport({
     d.startX = sx
     d.startY = sy
     let mode: DragMode
-    if (e.button === 2) mode = 'wl'
+    if (e.button === 2) mode = 'rotate'
     else if (e.button === 1) mode = 'pan'
     else if (tool === 'wl' || tool === 'pan' || tool === 'zoom' || tool === 'measure') mode = tool
     else mode = 'external'
@@ -273,6 +310,7 @@ export function SliceViewport({
     d.zoom = viewRef.current.zoom
     d.panX = viewRef.current.panX
     d.panY = viewRef.current.panY
+    d.angle = viewRef.current.angle
     if (mode === 'measure') {
       const ev = makeEvent('down', e)
       if (ev) draftRef.current = { id: crypto.randomUUID(), a: ev.point, b: ev.point }
@@ -298,6 +336,15 @@ export function SliceViewport({
     const dx = sx - d.startX
     const dy = sy - d.startY
     switch (d.mode) {
+      case 'rotate': {
+        const { w, h } = sizeRef.current
+        const cx = w / 2
+        const cy = h / 2
+        const startAngle = Math.atan2(d.startY - cy, d.startX - cx)
+        const currentAngle = Math.atan2(sy - cy, sx - cx)
+        viewRef.current.angle = d.angle! + (currentAngle - startAngle)
+        break
+      }
       case 'wl': {
         const base = useViewer.getState().defaultWl.width
         const sens = Math.max(0.5, base / 350)
@@ -343,7 +390,7 @@ export function SliceViewport({
 
   const onDoubleClick = (e: React.MouseEvent) => {
     if (tool === 'pan' || tool === 'zoom') {
-      viewRef.current = { zoom: 1, panX: 0, panY: 0 }
+      viewRef.current = { zoom: 1, panX: 0, panY: 0, angle: 0 }
       scheduleDraw()
       return
     }
@@ -384,6 +431,22 @@ export function SliceViewport({
       {!image && placeholder && (
         <div className="absolute inset-0 flex items-center justify-center p-6 text-center text-sm text-muted-foreground">
           {placeholder}
+        </div>
+      )}
+      {sliceIndex !== undefined && sliceCount !== undefined && sliceCount > 1 && (
+        <div className="absolute right-2 top-0 bottom-0 py-8 pointer-events-auto">
+          <Slider
+            orientation="vertical"
+            min={0}
+            max={sliceCount - 1}
+            step={1}
+            value={[sliceCount - 1 - sliceIndex]}
+            onValueChange={(v) => {
+              if (onSliceChange) onSliceChange(sliceCount - 1 - (v as number[])[0])
+            }}
+            className="h-full"
+            aria-label="Срез"
+          />
         </div>
       )}
     </div>

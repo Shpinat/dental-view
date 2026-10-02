@@ -11,6 +11,7 @@ import { ViewerToolbar } from './viewer-toolbar'
 import { MprLayout } from './mpr-layout'
 import { PanoramaLayout } from './panorama-layout'
 import { useViewerShortcuts } from './use-viewer-shortcuts'
+import { AdjustPanel } from './adjust-panel'
 
 export function Viewer({ id }: { id: string }) {
   const { data, error, isLoading } = useSWR(id ? ['volume', id] : null, () => loadVolume(id), {
@@ -53,9 +54,12 @@ export function Viewer({ id }: { id: string }) {
   return (
     <div className="flex h-dvh flex-col overflow-hidden bg-black text-foreground">
       <ViewerToolbar meta={data.meta} />
-      <main className="min-h-0 flex-1 p-1.5">
-        {layout === 'mpr' ? <MprLayout volume={data.volume} /> : <PanoramaLayout volume={data.volume} />}
-      </main>
+      <div className="flex min-h-0 flex-1">
+        <main className="min-h-0 min-w-0 flex-1 p-1.5">
+          {layout === 'mpr' ? <MprLayout volume={data.volume} /> : <PanoramaLayout volume={data.volume} />}
+        </main>
+        <AdjustPanel />
+      </div>
     </div>
   )
 }

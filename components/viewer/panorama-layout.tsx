@@ -152,6 +152,9 @@ export function PanoramaLayout({ volume }: { volume: Volume }) {
             info={[`Срез ${k + 1}/${nz}`, `Z ${(k * sz).toFixed(1)} мм`]}
             orientation={{ top: 'A', left: 'R', right: 'L' }}
             onScroll={(d) => setCursor({ z: z + d })}
+            sliceIndex={k}
+            sliceCount={nz}
+            onSliceChange={(idx) => setCursor({ z: idx })}
             onImagePointer={onAxialPointer}
             drawOverlay={drawAxialOverlay}
           />
@@ -165,6 +168,9 @@ export function PanoramaLayout({ volume }: { volume: Volume }) {
               info={path ? [`Длина дуги ${path.length.toFixed(1)} мм`] : undefined}
               orientation={{ left: 'R', right: 'L' }}
               onScroll={(d) => setPano({ crossPos: clampPos(crossPos + d * crossInterval) })}
+              sliceIndex={path ? Math.round(crossPos / path.step) : 0}
+              sliceCount={path ? path.count : 1}
+              onSliceChange={(idx) => { if (path) setPano({ crossPos: clampPos(idx * path.step) }) }}
               onImagePointer={onPanoramaPointer}
               drawOverlay={drawPanoramaOverlay}
               placeholder={
@@ -194,6 +200,9 @@ export function PanoramaLayout({ volume }: { volume: Volume }) {
               measureKey={`cross-${s.toFixed(2)}-${crossWidth}`}
               orientation={{ left: 'Яз', right: 'Вест', top: 'S' }}
               onScroll={(d) => setPano({ crossPos: clampPos(crossPos + d * crossInterval) })}
+              sliceIndex={path ? Math.round(crossPos / path.step) : 0}
+              sliceCount={path ? path.count : 1}
+              onSliceChange={(idx) => { if (path) setPano({ crossPos: clampPos(idx * path.step) }) }}
               onImagePointer={onCrossPointer}
               drawOverlay={(ctx, api) => {
                 const img = crossSections[i]

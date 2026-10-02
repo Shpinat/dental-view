@@ -33,6 +33,7 @@ import { useViewer, type Layout } from '@/lib/viewer-store'
 import { viewerUrl } from '@/lib/format'
 import type { StudyMeta, Tool, WindowLevel } from '@/lib/types'
 import { cn } from '@/lib/utils'
+import { ThemeToggle } from '@/components/theme-toggle'
 
 const TOOLS: { id: Tool; label: string; key: string; icon: LucideIcon; panoOnly?: boolean }[] = [
   { id: 'crosshair', label: 'Перекрестие / навигация', key: 'V', icon: Crosshair },
@@ -146,40 +147,18 @@ export function ViewerToolbar({ meta }: { meta: StudyMeta }) {
 
       <Separator orientation="vertical" className="mx-1 h-6" />
 
-      <DropdownMenu>
-        <DropdownMenuTrigger render={<Button variant="ghost" size="sm" className="text-xs" />}>
-          <SlidersHorizontal data-icon="inline-start" />
-          Пресеты W/L
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="start">
-          <DropdownMenuGroup>
-            <DropdownMenuLabel>Окно / уровень</DropdownMenuLabel>
-            {presets(defaultWl).map((p) => (
-              <DropdownMenuItem key={p.label} onClick={() => setWl(p.wl)}>
-                {p.label}
-                <span className="ml-auto pl-4 font-mono text-xs text-muted-foreground">
-                  {p.wl.width}/{p.wl.center}
-                </span>
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuGroup>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={resetWl}>Сбросить</DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-      <IconButton label="Инверсия (I)" icon={Contrast} active={invert} onClick={toggleInvert} />
       <IconButton
-        label="Сбросить масштаб и W/L (R)"
+        label="Сбросить масштаб (R)"
         icon={Maximize}
         onClick={() => {
           resetViews()
-          resetWl()
         }}
       />
       <IconButton label="Отменить измерение (Ctrl+Z)" icon={Undo2} onClick={undoMeasurement} disabled={!hasMeasurements} />
       <IconButton label="Удалить все измерения" icon={Trash2} onClick={clearMeasurements} disabled={!hasMeasurements} />
 
       <div className={cn('ml-auto flex items-center gap-1')}>
+        <ThemeToggle />
         <IconButton
           label="Открыть копию в новом окне"
           icon={AppWindow}

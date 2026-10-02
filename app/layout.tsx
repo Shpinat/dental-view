@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { ServiceWorkerRegister } from '@/components/sw-register'
+import { ThemeProvider } from '@/components/theme-provider'
 import './globals.css'
 
 const geist = Geist({ subsets: ['latin', 'cyrillic'], variable: '--font-geist-sans' })
@@ -23,7 +24,6 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  colorScheme: 'dark',
   themeColor: '#16191f',
   width: 'device-width',
   initialScale: 1,
@@ -35,11 +35,18 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="ru" className={`dark ${geist.variable} ${geistMono.variable} bg-background`}>
-      <body className="font-sans antialiased">
-        <TooltipProvider delay={300}>{children}</TooltipProvider>
-        <ServiceWorkerRegister />
-        {process.env.NODE_ENV === 'production' && <Analytics />}
+    <html lang="ru" className={`${geist.variable} ${geistMono.variable}`} suppressHydrationWarning>
+      <body className="font-sans antialiased bg-background">
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="light"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <TooltipProvider delay={300}>{children}</TooltipProvider>
+          <ServiceWorkerRegister />
+          {process.env.NODE_ENV === 'production' && <Analytics />}
+        </ThemeProvider>
       </body>
     </html>
   )
