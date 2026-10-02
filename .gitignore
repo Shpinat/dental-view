@@ -4,3 +4,4 @@ dev.log
 page.html
 test-results/
 *.tsbuildinfo
+out/
