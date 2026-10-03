@@ -5,7 +5,6 @@ import { buildLut, renderToImageData } from '@/lib/volume'
 import { useViewer } from '@/lib/viewer-store'
 import type { Measurement, Point2, SliceImage } from '@/lib/types'
 import { cn } from '@/lib/utils'
-import { Slider } from '@/components/ui/slider'
 
 export interface OverlayApi {
   toScreen: (p: Point2) => Point2
@@ -64,7 +63,7 @@ export function SliceViewport({
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const offscreenRef = useRef<HTMLCanvasElement | null>(null)
   const sizeRef = useRef({ w: 0, h: 0 })
-  const viewRef = useRef({ zoom: 1, panX: 0, panY: 0, angle: 0 })
+  const viewRef = useRef({ zoom: 1, panX: 0, panY: 0 })
   const dragRef = useRef<{ mode: DragMode; startX: number; startY: number; wl?: { center: number; width: number }; zoom?: number; panX?: number; panY?: number; angle?: number; anchor?: Point2 }>({ mode: null, startX: 0, startY: 0 })
   const draftRef = useRef<Measurement | null>(null)
   const hoverRef = useRef<{ p: Point2; value: number } | null>(null)
@@ -75,6 +74,7 @@ export function SliceViewport({
   const tool = useViewer((s) => s.tool)
   const measurements = useViewer((s) => s.measurements[measureKey])
   const viewToken = useViewer((s) => s.viewToken)
+  const globalAngle = useViewer((s) => s.globalAngle)
 
   const lut = useMemo(() => buildLut(wl, invert), [wl, invert])
 
@@ -106,7 +106,8 @@ export function SliceViewport({
     const wMm = img.width * img.spacingX
     const hMm = img.height * img.spacingY
     const fit = Math.min(w / wMm, h / hMm) * 0.94
-    const { zoom, panX, panY, angle } = viewRef.current
+    const { zoom, panX, panY } = viewRef.current
+    const angle = globalAngle
     const scale = fit * zoom
     const pxX = scale * img.spacingX
     const pxY = scale * img.spacingY
@@ -219,7 +220,7 @@ export function SliceViewport({
   })
 
   useEffect(() => {
-    viewRef.current = { zoom: 1, panX: 0, panY: 0, angle: 0 }
+    viewRef.current = { zoom: 1, panX: 0, panY: 0 }
     scheduleDraw()
   }, [viewToken, scheduleDraw])
 
@@ -310,7 +311,7 @@ export function SliceViewport({
     d.zoom = viewRef.current.zoom
     d.panX = viewRef.current.panX
     d.panY = viewRef.current.panY
-    d.angle = viewRef.current.angle
+    d.angle = globalAngle
     if (mode === 'measure') {
       const ev = makeEvent('down', e)
       if (ev) draftRef.current = { id: crypto.randomUUID(), a: ev.point, b: ev.point }
@@ -342,7 +343,7 @@ export function SliceViewport({
         const cy = h / 2
         const startAngle = Math.atan2(d.startY - cy, d.startX - cx)
         const currentAngle = Math.atan2(sy - cy, sx - cx)
-        viewRef.current.angle = d.angle! + (currentAngle - startAngle)
+        useViewer.getState().setGlobalAngle(d.angle! + (currentAngle - startAngle))
         break
       }
       case 'wl': {
@@ -390,7 +391,8 @@ export function SliceViewport({
 
   const onDoubleClick = (e: React.MouseEvent) => {
     if (tool === 'pan' || tool === 'zoom') {
-      viewRef.current = { zoom: 1, panX: 0, panY: 0, angle: 0 }
+      viewRef.current = { zoom: 1, panX: 0, panY: 0 }
+      useViewer.getState().setGlobalAngle(0)
       scheduleDraw()
       return
     }
@@ -434,17 +436,18 @@ export function SliceViewport({
         </div>
       )}
       {sliceIndex !== undefined && sliceCount !== undefined && sliceCount > 1 && (
-        <div className="absolute right-2 top-0 bottom-0 py-8 pointer-events-auto">
-          <Slider
-            orientation="vertical"
+        <div className="absolute right-0 top-0 bottom-0 w-4 bg-transparent hover:bg-black/20 transition-colors flex items-center justify-center pointer-events-auto z-10">
+          <input
+            type="range"
             min={0}
             max={sliceCount - 1}
             step={1}
-            value={[sliceCount - 1 - sliceIndex]}
-            onValueChange={(v) => {
-              if (onSliceChange) onSliceChange(sliceCount - 1 - (v as number[])[0])
+            value={sliceCount - 1 - sliceIndex}
+            onChange={(e) => {
+              if (onSliceChange) onSliceChange(sliceCount - 1 - parseInt(e.target.value, 10))
             }}
-            className="h-full"
+            className="h-[calc(100%-16px)] w-2 cursor-pointer appearance-none bg-transparent [&::-webkit-slider-runnable-track]:w-2 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-muted [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:-ml-1"
+            style={{ writingMode: 'vertical-lr', direction: 'rtl' } as React.CSSProperties}
             aria-label="Срез"
           />
         </div>
