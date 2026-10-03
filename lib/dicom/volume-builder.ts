@@ -198,7 +198,16 @@ export function assembleSeries(slices: ParsedSlice[], warnings: string[]): Impor
     const ny = first.rows
     const nz = frames.length
     const data = new Int16Array(nx * ny * nz)
-    for (let k = 0; k < nz; k++) data.set(frames[k], k * nx * ny)
+    for (let k = 0; k < nz; k++) {
+      const frame = frames[k]
+      // Flip the frame vertically to match standard screen coordinates
+      for (let y = 0; y < ny; y++) {
+        data.set(
+          frame.subarray(y * nx, (y + 1) * nx),
+          k * nx * ny + (ny - 1 - y) * nx
+        )
+      }
+    }
 
     const [rowSpacing, colSpacing] = first.pixelSpacing
     const spacing: Vec3 = [colSpacing, rowSpacing, sliceSpacing && sliceSpacing > 0 ? sliceSpacing : colSpacing]

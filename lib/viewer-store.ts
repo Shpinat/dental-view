@@ -20,8 +20,10 @@ interface ViewerState {
   crossWidth: number
   measurements: Record<string, Measurement[]>
   viewToken: number
+  globalAngle: number
   resetViews: () => void
   init: (dims: Vec3, wl: WindowLevel) => void
+  setGlobalAngle: (angle: number) => void
   setCursor: (patch: Partial<{ x: number; y: number; z: number }>) => void
   setWl: (wl: WindowLevel) => void
   resetWl: () => void
@@ -55,7 +57,9 @@ export const useViewer = create<ViewerState>((set, get) => ({
   crossWidth: 36,
   measurements: {},
   viewToken: 0,
-  resetViews: () => set({ viewToken: get().viewToken + 1 }),
+  globalAngle: 0,
+  resetViews: () => set({ viewToken: get().viewToken + 1, globalAngle: 0 }),
+  setGlobalAngle: (angle) => set({ globalAngle: angle }),
   init: (dims, wl) => {
     lastMeasurementKey = []
     set({
@@ -69,6 +73,7 @@ export const useViewer = create<ViewerState>((set, get) => ({
       curveDone: false,
       measurements: {},
       crossPos: 0,
+      globalAngle: 0,
     })
   },
   setCursor: (patch) => {
