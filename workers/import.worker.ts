@@ -14,7 +14,7 @@ self.onmessage = async (event: MessageEvent<Request>) => {
   try {
     if (req.type === 'phantom') {
       post({ type: 'progress', done: 0, total: 100, stage: 'Генерация фантома' })
-      const series = generatePhantom((p) =>
+      const series = generatePhantom((p: number) =>
         post({ type: 'progress', done: Math.round(p * 100), total: 100, stage: 'Генерация фантома' }),
       )
       post({ type: 'series', series }, [series.buffer])
