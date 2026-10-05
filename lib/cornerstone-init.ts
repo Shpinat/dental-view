@@ -1,5 +1,5 @@
 import * as cornerstone from '@cornerstonejs/core';
-import * as dicomImageLoader from '@cornerstonejs/dicom-image-loader';
+
 import * as cornerstoneTools from '@cornerstonejs/tools';
 
 let initialization: Promise<void> | undefined;
@@ -9,7 +9,7 @@ export function initializeCornerstone(): Promise<void> {
     initialization = Promise.resolve().then(() => {
       cornerstone.init();
       cornerstoneTools.init();
-      dicomImageLoader.init();
+
       cornerstone.registerImageLoader('local', (imageId) => {
         const image = cornerstone.cache.getImage(imageId);
         if (!image) {

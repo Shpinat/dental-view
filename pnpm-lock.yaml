@@ -14,9 +14,6 @@ importers:
       '@cornerstonejs/core':
         specifier: ^5.11.4
         version: 5.11.4(@cornerstonejs/metadata@5.11.4)(@cornerstonejs/utils@5.11.4)(autoprefixer@10.6.1(postcss@8.5.6))(wslink@2.5.0)
-      '@cornerstonejs/dicom-image-loader':
-        specifier: ^5.11.4
-        version: 5.11.4(@cornerstonejs/core@5.11.4(@cornerstonejs/metadata@5.11.4)(@cornerstonejs/utils@5.11.4)(autoprefixer@10.6.1(postcss@8.5.6))(wslink@2.5.0))(@cornerstonejs/metadata@5.11.4)(dicom-parser@1.8.21)
       '@cornerstonejs/tools':
         specifier: ^5.11.4
         version: 5.11.4(@cornerstonejs/core@5.11.4(@cornerstonejs/metadata@5.11.4)(@cornerstonejs/utils@5.11.4)(autoprefixer@10.6.1(postcss@8.5.6))(wslink@2.5.0))(@kitware/vtk.js@36.4.1(autoprefixer@10.6.1(postcss@8.5.6))(wslink@2.5.0))(@types/d3-array@3.2.1)(@types/d3-interpolate@3.0.4)(d3-array@3.2.4)(d3-interpolate@3.0.1)(gl-matrix@3.4.3)
@@ -265,41 +262,11 @@ packages:
     resolution: {integrity: sha512-2SwVJKzC1DzyxdxJtCht9dhTND2GFjLwhhkDyyC7vJq5tIgbhxgPk1CSwovO1pxmoybAXzjOxnaubllxLgoT+w==}
     engines: {node: '>=10'}
 
-  '@cornerstonejs/codec-charls@1.2.7':
-    resolution: {integrity: sha512-kNfQ7J8LIrfQUbt56fPJ0SEvevLlAAbsLHjqPS4DUDWVSuAHb5Fn0cMIV/U0SYkJRJqKvzyLJYF1hl7/xQGqLQ==}
-    engines: {node: '>=0.14'}
-
-  '@cornerstonejs/codec-libjpeg-turbo-8bit@1.2.7':
-    resolution: {integrity: sha512-TINxDtm+RQuMvWNyNR6z8lCkqDKguZBMrPJ3+oAvLc1XQ3tQsIGIIUWzveedpyr8gp7DYsQqoPLhCl2mYTSv3w==}
-    engines: {node: '>=0.14'}
-
-  '@cornerstonejs/codec-libjxl@1.1.1':
-    resolution: {integrity: sha512-Gp5AXNDuqX9CggJ6VJzjEuPowL2IsKGkvUPo3I7ZmCaY1vNDTwOdJUFrHACl3RIMDm+EL9EUw0Lhsmbs5b0fvA==}
-    engines: {node: '>=24'}
-
-  '@cornerstonejs/codec-openjpeg@1.3.6':
-    resolution: {integrity: sha512-bSdZXF+2GxfBkWHUr7yGLQtIwbAm9wOl3e4ARee/9Z9lfKyVqhUCixI6+ZjIn9YKTIuDcn/NZNK94XEUg1SBtw==}
-    engines: {node: '>=0.14'}
-
-  '@cornerstonejs/codec-openjph@2.4.11':
-    resolution: {integrity: sha512-NzwCYevGSj2JOuP7BztxrOd5WnJ86gOGLv3sq36jZxxHUXoDo1YhzizHiYz+T7GQqkzbfaQcwSyxsRogzGFIPQ==}
-    engines: {node: '>=0.14'}
-
   '@cornerstonejs/core@5.11.4':
     resolution: {integrity: sha512-gyh8eKpo9ugiHE9DDY6QvLZbKOfzUw/UudVEvFvTPTDm2zeK0EaAjq0uXxV7BlCAA9wPlE9vg39SGoj427QtDA==}
     peerDependencies:
       '@cornerstonejs/metadata': 5.11.4
       '@cornerstonejs/utils': 5.11.4
-
-  '@cornerstonejs/dicom-image-loader@5.11.4':
-    resolution: {integrity: sha512-VeENYLb+cX9E3d2ii7+geu9Pa3oP8EbJbM/SfrM07EMJ2R9Gg0GNam//Bsez3Hs39SRs/p3xQQufNgfKnAygag==}
-    peerDependencies:
-      '@cornerstonejs/core': 5.11.4
-      '@cornerstonejs/metadata': 5.11.4
-      dicom-parser: 1.8.21
-
-  '@cornerstonejs/jpeg-lossless-decoder-js@2.2.1':
-    resolution: {integrity: sha512-cDCv7dm3qw9kbxCydvj0UGbNQcsPmTwcyd9SQXkBt34CDgSBeb8Xvj0Gz9HlJ+7DIKOFMTazF1oDJSu0pcCKmg==}
 
   '@cornerstonejs/metadata@5.11.4':
     resolution: {integrity: sha512-MysFQ10vsEivRNEtCoWysbIDok5jmQFMrsWOWjPwcrQAG61y3DdvCFwpFstbShvXAivEqf287aF8CKjwHKEItg==}
@@ -1239,9 +1206,6 @@ packages:
   detect-libc@2.1.2:
     resolution: {integrity: sha512-Btj2BOOO83o3WyH59e8MgXsxEQVcarkUOpEYrubB0urwnN10yQ364rsiByU11nZlqWYZm05i/of7io4mzihBtQ==}
     engines: {node: '>=8'}
-
-  dicom-parser@1.8.21:
-    resolution: {integrity: sha512-lYCweHQDsC8UFpXErPlg86Px2A8bay0HiUY+wzoG3xv5GzgqVHU3lziwSc/Gzn7VV7y2KeP072SzCviuOoU02w==}
 
   diff@8.0.4:
     resolution: {integrity: sha512-DPi0FmjiSU5EvQV0++GFDOJ9ASQUVFh5kD+OzOnYdi7n3Wpm9hWWGfB/O2blfHcMVTL5WkQXSnRiK9makhrcnw==}
@@ -2427,11 +2391,6 @@ packages:
   util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
 
-  uuid@9.0.1:
-    resolution: {integrity: sha512-b+1eJOlsR9K8HJpow9Ok3fiWOWSIcIzXodvv0rQjVoOVNpWMpxf1wZNpt4y9h10odCNrqnYp1OBzRktckBe3sA==}
-    deprecated: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
-    hasBin: true
-
   validate-npm-package-name@7.0.2:
     resolution: {integrity: sha512-hVDIBwsRruT73PbK7uP5ebUt+ezEtCmzZz3F59BSr2F6OVFnJ/6h8liuvdLrQ88Xmnk6/+xGGuq+pG9WwTuy3A==}
     engines: {node: ^20.17.0 || >=22.9.0}
@@ -2816,16 +2775,6 @@ snapshots:
 
   '@cornerstonejs/calculate-suv@1.0.3': {}
 
-  '@cornerstonejs/codec-charls@1.2.7': {}
-
-  '@cornerstonejs/codec-libjpeg-turbo-8bit@1.2.7': {}
-
-  '@cornerstonejs/codec-libjxl@1.1.1': {}
-
-  '@cornerstonejs/codec-openjpeg@1.3.6': {}
-
-  '@cornerstonejs/codec-openjph@2.4.11': {}
-
   '@cornerstonejs/core@5.11.4(@cornerstonejs/metadata@5.11.4)(@cornerstonejs/utils@5.11.4)(autoprefixer@10.6.1(postcss@8.5.6))(wslink@2.5.0)':
     dependencies:
       '@cornerstonejs/metadata': 5.11.4
@@ -2837,23 +2786,6 @@ snapshots:
     transitivePeerDependencies:
       - autoprefixer
       - wslink
-
-  '@cornerstonejs/dicom-image-loader@5.11.4(@cornerstonejs/core@5.11.4(@cornerstonejs/metadata@5.11.4)(@cornerstonejs/utils@5.11.4)(autoprefixer@10.6.1(postcss@8.5.6))(wslink@2.5.0))(@cornerstonejs/metadata@5.11.4)(dicom-parser@1.8.21)':
-    dependencies:
-      '@cornerstonejs/codec-charls': 1.2.7
-      '@cornerstonejs/codec-libjpeg-turbo-8bit': 1.2.7
-      '@cornerstonejs/codec-libjxl': 1.1.1
-      '@cornerstonejs/codec-openjpeg': 1.3.6
-      '@cornerstonejs/codec-openjph': 2.4.11
-      '@cornerstonejs/core': 5.11.4(@cornerstonejs/metadata@5.11.4)(@cornerstonejs/utils@5.11.4)(autoprefixer@10.6.1(postcss@8.5.6))(wslink@2.5.0)
-      '@cornerstonejs/jpeg-lossless-decoder-js': 2.2.1
-      '@cornerstonejs/metadata': 5.11.4
-      comlink: 4.4.2
-      dicom-parser: 1.8.21
-      pako: 2.1.0
-      uuid: 9.0.1
-
-  '@cornerstonejs/jpeg-lossless-decoder-js@2.2.1': {}
 
   '@cornerstonejs/metadata@5.11.4':
     dependencies:
@@ -3591,8 +3523,6 @@ snapshots:
   dequal@2.0.3: {}
 
   detect-libc@2.1.2: {}
-
-  dicom-parser@1.8.21: {}
 
   diff@8.0.4: {}
 
@@ -4716,8 +4646,6 @@ snapshots:
       pako: 1.0.11
 
   util-deprecate@1.0.2: {}
-
-  uuid@9.0.1: {}
 
   validate-npm-package-name@7.0.2: {}
 
