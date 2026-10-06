@@ -12,6 +12,7 @@ import { MprLayout } from './mpr-layout'
 import { PanoramaLayout } from './panorama-layout'
 import { useViewerShortcuts } from './use-viewer-shortcuts'
 import { AdjustPanel } from './adjust-panel'
+import { initializeCornerstone } from '@/lib/cornerstone-init'
 
 export function Viewer({ id }: { id: string }) {
   const { data, error, isLoading } = useSWR(id ? ['volume', id] : null, () => loadVolume(id), {
@@ -22,6 +23,10 @@ export function Viewer({ id }: { id: string }) {
   const layout = useViewer((s) => s.layout)
   const ready = useViewer((s) => s.dims === data?.meta.dims)
   const init = useViewer((s) => s.init)
+
+  useEffect(() => {
+    initializeCornerstone()
+  }, [])
 
   useEffect(() => {
     if (!data) return
@@ -56,7 +61,7 @@ export function Viewer({ id }: { id: string }) {
       <ViewerToolbar meta={data.meta} />
       <div className="flex min-h-0 flex-1">
         <main className="min-h-0 min-w-0 flex-1 p-1.5">
-          {layout === 'mpr' ? <MprLayout volume={data.volume} /> : <PanoramaLayout volume={data.volume} />}
+          {layout === 'mpr' ? <MprLayout volume={data.volume} meta={data.meta} /> : <PanoramaLayout volume={data.volume} />}
         </main>
         <AdjustPanel />
       </div>

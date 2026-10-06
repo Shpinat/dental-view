@@ -28,8 +28,7 @@ export function MprLayout({ volume, meta }: { volume: Volume, meta: StudyMeta })
 
   const tool = useViewer(s => s.tool);
   const defaultWl = useViewer(s => s.defaultWl);
-  const resetViewsEvent = useViewer(s => s.resetViewsEvent);
-  const invertEvent = useViewer(s => s.invertEvent);
+  const viewToken = useViewer(s => s.viewToken);
   const invert = useViewer(s => s.invert);
 
   useEffect(() => {
@@ -185,7 +184,7 @@ export function MprLayout({ volume, meta }: { volume: Volume, meta: StudyMeta })
 
   // Handle reset views event
   useEffect(() => {
-     if (resetViewsEvent === 0) return;
+     if (viewToken === 0) return;
      const engine = engineRef.current;
      if (!engine) return;
 
@@ -202,22 +201,21 @@ export function MprLayout({ volume, meta }: { volume: Volume, meta: StudyMeta })
         }
      });
      engine.render();
-  }, [resetViewsEvent, defaultWl]);
+  }, [viewToken, defaultWl]);
 
   // Handle invert event
   useEffect(() => {
-     if (invertEvent === 0) return;
      const engine = engineRef.current;
      if (!engine) return;
 
      VIEWPORTS.forEach(({ id }) => {
         const viewport = engine.getViewport(id);
         if (viewport && viewport instanceof cornerstone.VolumeViewport) {
-           viewport.setProperties({ invert: invert });
+           viewport.setProperties({ invert });
         }
      });
      engine.render();
-  }, [invertEvent, invert]);
+  }, [invert]);
 
 
   return (
